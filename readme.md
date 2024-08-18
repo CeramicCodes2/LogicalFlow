@@ -1,4 +1,4 @@
-# about PowerMemoriesProject
+# about LogicalFlow
 
 this its a project of an advanced RAG tahat has incorporates a web crawler 
 for extract data and documents from the internet or
