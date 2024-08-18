@@ -1,8 +1,8 @@
 from abc import ABC,abstractmethod
 from ...app.schemas.ModelEntity import ConversationMessages
 class ForMessageRepository(ABC):
-    @abstractmethod
     @property
+    @abstractmethod
     def messagesHistory(self,message:dict[str,str]):
         return dict()
     @messagesHistory.setter

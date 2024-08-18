@@ -4,7 +4,7 @@ from ...ports.drivens.for_messageFormatting import ForMessageRepository
 MOCK_DATA = ConversationMessages(
     messages=[{
         "role":"system","content":"Hello world!"
-    }]
+    }],jinjaTemplateFormat=''
 )
 class MessageRepository(ForMessageRepository):
     def __init__(self) -> None:
