@@ -5,6 +5,6 @@ class InputPrompt(ForInputPrompt):
     def __init__(self,backend) -> None:
         self.backend = backend
         
-    def processInput(self, input: UserRequest):
-        return self.backend.processInput(input)
+    def ragProcessInput(self, input: UserRequest):
+        return self.backend.ragProcessInput(input)
     

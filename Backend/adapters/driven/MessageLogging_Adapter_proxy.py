@@ -6,9 +6,9 @@ init()
 class MessageLogging(ForMessageLogging):
     def checkStatusMessage(self,status):
         dctStatus = {
-            'info':{'fore':Fore.YELLOW,'back':Back.BLUE},
-            'error':{'fore':Back.RED,'back':Back.RESET},
-            'system':{'fore':Fore.CYAN,'back':Back.BLUE}
+            'info':{'fore':Fore.YELLOW,'back':Fore.BLUE},
+            'error':{'fore':Back.RED,'back':Fore.RESET},
+            'system':{'fore':Fore.CYAN,'back':Fore.BLUE}
         }
         if not(status in dctStatus):
             print(f'[{dctStatus["error"]["back"]}] {dctStatus["error"]["fore"]} ERROR UNIKOWN STATUS')
@@ -18,9 +18,9 @@ class MessageLogging(ForMessageLogging):
     def log(self,message: str, status: str) -> None:
         statusAlert = self.checkStatusMessage(status)
         
-        print(f"[{statusAlert['fore']}{status}]: {statusAlert['back']}{message}{Back.RESET}")
+        print(f"{Fore.GREEN}[{statusAlert['fore']}{status}{Fore.GREEN}]{Fore.RESET}: {statusAlert['back']}{message}{Back.RESET}{Fore.RESET}")
     def logFromList(self,messages: list, status: str) -> None:
         
         alert = self.checkStatusMessage(status)
         for message in messages:
-            print(f"[{alert['fore']}{status}]: {alert['back']}{message}{Back.RESET}")
+            print(f"{Fore.GREEN}[{alert['fore']}{status}{Fore.GREEN}]{Fore.RESET}: {alert['back']}{message}{Back.RESET}{Fore.RESET}")

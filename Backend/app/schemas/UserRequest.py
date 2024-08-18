@@ -8,7 +8,7 @@ class Message:
     
 @dataclass
 class UserRequest:
-    request:str
+    request:str = ''
     significantLinks:str = ''
     significantResources:str = ''
     def toDict(self):

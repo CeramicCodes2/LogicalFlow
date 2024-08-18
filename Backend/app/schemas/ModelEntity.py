@@ -4,6 +4,7 @@ class ModelEntity:
     modelName:str
     modelPath:str
     systemQueryExpansion:str
+    systemPresentationResources:str
     temperature:float = 0.6
     top_p:float = 0.75
     top_k:float = 50

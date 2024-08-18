@@ -1,7 +1,7 @@
 import unittest 
 from unittest.mock import Mock,patch,PropertyMock
-
-from Backend.app.schemas import UserRequest
+ 
+from .backend import UserRequest
 from .backend import Backend,ModelEntity
 from ..adapters.driven import (
     MessageLogging_Adapter_proxy,
@@ -14,7 +14,7 @@ from ..adapters.driven import (
 #    InputPrompt_adapter,
 #    
 #)
-    
+
 class TestBackend(unittest.TestCase):
     @classmethod
     @patch.object(MessageRepository_Proxy_Adapter.MessageRepository,'messagesHistory',new_callable=PropertyMock)
@@ -59,6 +59,10 @@ class TestBackend(unittest.TestCase):
     Ensure each question is complete and directly related to the original inquiry. 
     List each question on a separate line without numbering.
             """,
+            systemPresentationResources="""
+    respond to the current question {user_input}
+    using the follow resources {resources}
+            """,
             temperature=0.7,
             top_p=0.5,
             top_k=0.5,
@@ -72,7 +76,8 @@ class TestBackend(unittest.TestCase):
             self.backend.loadModel(specsEntity=MOCK_BACKEND)([1]),
             self.backendMockLoadder.loadBackend(model=MOCK_BACKEND)([1])
         )
-    def test_processInput(self):
+    @patch.object(UserRequest,'request',new_callable=PropertyMock)
+    def test_ragProcessInput(self,mock_request):
         MOCK_BACKEND = ModelEntity(
             modelName='ranni',
             modelPath='D://USER',
@@ -84,6 +89,10 @@ class TestBackend(unittest.TestCase):
     Ensure each question is complete and directly related to the original inquiry. 
     List each question on a separate line without numbering.
             {user_input}""",
+            systemPresentationResources="""
+    respond to the current question {user_input}
+    using the follow resources {resources}
+            """,
             temperature=0.7,
             top_p=0.5,
             top_k=0.5,
@@ -97,7 +106,11 @@ class TestBackend(unittest.TestCase):
             self.backend.loadModel(specsEntity=MOCK_BACKEND)([1]),
             self.backendMockLoadder.loadBackend(model=MOCK_BACKEND)([1])
         )
-        self.assertEqual(self.backend.processInput(input=UserRequest),
+        
+        # MOCK CONSUME
+        MOCK_USERINPUT = 'what is the meaning of the live ?'
+        mock_request.return_value = MOCK_USERINPUT
+        self.assertEqual(self.backend.ragProcessInput(input=UserRequest()),
                          self.query.getData(['']).queryRequest
                          )
         

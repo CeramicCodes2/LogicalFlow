@@ -20,28 +20,37 @@ class Backend(ForModelLoading,ForInputPrompt):
     def loadModel(self,specsEntity:ModelEntity)->GeneratorModel:
         self.specsEntity = specsEntity
         self.queryExpansionMessage = Message(content=self.specsEntity.systemQueryExpansion,rol='system')
+        self.queryResponseMessage = Message(content=self.specsEntity.systemPresentationResources,
+                                            rol='system')
         self.generator = self.loadder.loadBackend(specsEntity)
         
         return self.generator
-    def processInput(self, input: UserRequest):
+    def ragProcessInput(self, input: UserRequest):
         if not(self.generator):
             raise NameError('no se ha cargado ningun modelo en memoria ...')
         # 1) generates the question using the query expansion tecnique
         
-        consumedMessage = self.queryExpansionMessage.content.format(user_input=input)
-        
+        consumedMessage = self.queryExpansionMessage.content.format(user_input=input.request)
+        self.log.log(consumedMessage,'info')
         alucinationResponse = self.generator(self.messagesRepository.formatMessagesList(consumedMessage))
+        
         
         # concatenate the user query
         
+        self.log.log('STARTING SHOW THE QUERY EXPANSION QUESTIONS GENERATED','system')
+        alucinationResponse = [input.request] + alucinationResponse
         self.log.logFromList(messages=alucinationResponse,status='info')
-        
-        
+        self.log.log('END OF QUERY EXPANSION QUESTIONS','system')
         # 2) we use the RAG for recave information abaout a certain theme
         
         recvData = self.userQuery.getData(request=alucinationResponse)
+        self.log.log('RESOURCES FINDED',status='info')
         self.log.logFromList(messages=recvData.queryRequest,status='info')
         
-        
+        # 3) parsing the data to the llm 
+        presentationMessageWithResources = self.queryResponseMessage.content.format(
+            user_input=input.request,
+            resources=recvData
+        )
         return recvData.queryRequest
     

@@ -11,7 +11,17 @@ class ForMessageRepository(ABC):
     @messagesHistory.deleter
     def messagesHistory(self):
         ...
+    @property
     @abstractmethod
-    def formatMessagesList(self,messages:ConversationMessages):
+    def template(self):
+        return self._messagesHistory.jinjaTemplateFormat
+    @template.setter
+    def template(self,template:str):
+        self._messagesHistory.jinjaTemplateFormat = template
+    @template.deleter
+    def template(self):
+        self._messagesHistory.jinjaTemplateFormat = ''
+    @abstractmethod
+    def formatMessagesList(self,messages:ConversationMessages) ->str:
         ...        
     
