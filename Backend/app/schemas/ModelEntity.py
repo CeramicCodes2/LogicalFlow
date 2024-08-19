@@ -23,4 +23,5 @@ class GeneratorModel:
 @dataclass
 class ConversationMessages:
     messages:list[dict[str,str]]
-    jinjaTemplateFormat:str    
+    jinjaTemplateFormat:str   
+

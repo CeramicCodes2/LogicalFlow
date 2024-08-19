@@ -23,5 +23,8 @@ class ForMessageRepository(ABC):
         self._messagesHistory.jinjaTemplateFormat = ''
     @abstractmethod
     def formatMessagesList(self,messages:ConversationMessages) ->str:
-        ...        
+        ...
+    @abstractmethod
+    def renderMessage(self,template:str,vars:dict[str,str]) -> str:
+        ...    
     

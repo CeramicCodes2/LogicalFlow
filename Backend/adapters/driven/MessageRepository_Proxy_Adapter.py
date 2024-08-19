@@ -32,3 +32,6 @@ class MessageRepository(ForMessageRepository):
     def formatMessagesList(self, messages: ConversationMessages) -> str:
         template = Template(self.template)
         return template.render(messages)
+    def renderMessage(self, template: str,vars:dict[str,str]) -> str:
+        return Template(template,**vars)
+    

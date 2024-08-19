@@ -30,9 +30,13 @@ class Backend(ForModelLoading,ForInputPrompt):
             raise NameError('no se ha cargado ningun modelo en memoria ...')
         # 1) generates the question using the query expansion tecnique
         
-        consumedMessage = self.queryExpansionMessage.content.format(user_input=input.request)
+        consumedMessage = self.messagesRepository.renderMessage(
+            template=self.queryExpansionMessage.content,
+            vars={"user_input":input.request})
+        
+        self.log.log('prompt used','system')
         self.log.log(consumedMessage,'info')
-        alucinationResponse = self.generator(self.messagesRepository.formatMessagesList(consumedMessage))
+        alucinationResponse = self.generator(consumedMessage)
         
         
         # concatenate the user query
@@ -44,13 +48,12 @@ class Backend(ForModelLoading,ForInputPrompt):
         # 2) we use the RAG for recave information abaout a certain theme
         
         recvData = self.userQuery.getData(request=alucinationResponse)
-        self.log.log('RESOURCES FINDED',status='info')
+        self.log.log('RESOURCES FINDED',status='system')
         self.log.logFromList(messages=recvData.queryRequest,status='info')
         
         # 3) parsing the data to the llm 
-        presentationMessageWithResources = self.queryResponseMessage.content.format(
-            user_input=input.request,
-            resources=recvData
-        )
-        return recvData.queryRequest
+        presentationMessageWithResources = self.messagesRepository.renderMessage(
+            template=self.queryResponseMessage.content,
+            vars={"user_input":input.request,"resources":recvData})
+        return self.generator(presentationMessageWithResources)
     

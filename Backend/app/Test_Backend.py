@@ -36,8 +36,16 @@ class TestBackend(unittest.TestCase):
         repositoryMessages_mock.messagesHistory = {'role':'alice','content':'hello!'}
         # sets the deletter mock
         del repositoryMessages_mock.messagesHistory
+        cls.renderMessageMock = Mock()
+        cls.renderMessageMock.return_value = """jcskcnjskncjskncskj
+        baaaa user input:
         
-        
+        response:
+        21
+        212
+        212
+        """
+        cls.repository.renderMessage = cls.renderMessageMock 
         # APP
         cls.backend = Backend(
             userQuery=cls.query,
@@ -60,8 +68,8 @@ class TestBackend(unittest.TestCase):
     List each question on a separate line without numbering.
             """,
             systemPresentationResources="""
-    respond to the current question {user_input}
-    using the follow resources {resources}
+    respond to the current question {{user_input}}
+    using the follow resources {% for resource of resources%} * {{resource}} \n {%endfor%}
             """,
             temperature=0.7,
             top_p=0.5,
@@ -88,10 +96,10 @@ class TestBackend(unittest.TestCase):
     Provide concise, single-topic questions (withouth compounding sentences) that cover various aspects of the topic. 
     Ensure each question is complete and directly related to the original inquiry. 
     List each question on a separate line without numbering.
-            {user_input}""",
+            """,
             systemPresentationResources="""
-    respond to the current question {user_input}
-    using the follow resources {resources}
+    respond to the current question {{user_input}}
+    using the follow resources {% for resource of resources%} * {{resource}} \n {%endfor%}
             """,
             temperature=0.7,
             top_p=0.5,
@@ -110,9 +118,13 @@ class TestBackend(unittest.TestCase):
         # MOCK CONSUME
         MOCK_USERINPUT = 'what is the meaning of the live ?'
         mock_request.return_value = MOCK_USERINPUT
-        self.assertEqual(self.backend.ragProcessInput(input=UserRequest()),
-                         self.query.getData(['']).queryRequest
-                         )
+        process = self.backend.ragProcessInput(input=UserRequest())
+        mock_result = self.backend.generator([''])
+        self.renderMessageMock.assert_called()
+        self.assertEqual(process,
+                         mock_result)
+        #                 
+        #                 )
         
 if __name__ =='__main__':
     unittest.main()
